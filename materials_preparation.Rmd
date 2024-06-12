@@ -1,0 +1,100 @@
+---
+title: "materials_preparation"
+author: "Leonardo Concetti"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+This file contains all the adjustments made to the materials file. The file was originally designed for an eye-tracking experiment (Concetti & Moscati 2023), and will now be used for a large-sample SPR replication attempt. Minor adjustments to the file structure are therefore needed to reflect differences in how the file is handled across the different software (i.e. Experiment Builder vs PCIbex).
+
+
+Load packages
+
+```{r}
+
+library(tidyverse)
+
+```
+
+
+Load materials file
+
+```{r}
+
+materials <- read_csv("trace_reactivation_spr.csv")
+
+```
+
+
+Modify sentence spacing methods for PCIbex use
+
+```{r}
+
+materials <- materials |> 
+  mutate(sentence = str_replace_all(sentence, " ", "_"),
+         sentence = str_replace_all(sentence, "\\*", " "),
+         sentence = str_replace_all(sentence, "\\. ", ".")
+         )
+
+```
+
+
+Remove a useless column
+
+```{r}
+
+materials <- materials |> 
+  select(- 'Presence of question')
+
+```
+
+
+Change how the expected answers are coded (since in spr I'll just make participants click on a box instead of using a keyboard shortcut)
+
+```{r}
+
+materials <- materials |> 
+  mutate(answer = str_replace_all(answer, "c", "si"),
+         answer = str_replace_all(answer, "m", "no")
+         )
+
+```
+
+
+Add information about item type (experimental or filler), based on the condition column (this additional column is needed in PCIbex to set the presentation sequence with custom randomization)
+
+```{r}
+
+materials <- materials |> 
+  mutate(item_type = case_when(
+    condition %in% c("OR", "SR") ~ "experimental",
+    condition == "fill" ~ "filler",
+    TRUE ~ NA_character_  # Set to NA if no condition is matched
+  ))
+
+```
+
+
+Change the condition column to lowercase 
+
+```{r}
+
+materials <- materials |> 
+  mutate(condition = str_to_lower(condition))
+
+```
+
+
+Save the csv file
+
+```{r}
+
+write_csv(materials, r"[C:\Users\lconc\OneDrive - student.unisi.it\PhD - DISPOC\Projects\2 - Year 2\trace_reactivation\materials.csv]")
+
+```
+
