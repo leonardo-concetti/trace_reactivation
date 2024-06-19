@@ -26,7 +26,7 @@ Load materials file
 
 ```{r}
 
-materials <- read_csv("trace_reactivation_spr.csv")
+materials <- read_csv("materials_trace_reactivation.csv")
 
 ```
 
@@ -97,4 +97,70 @@ Save the csv file
 write_csv(materials, r"[C:\Users\lconc\OneDrive - student.unisi.it\PhD - DISPOC\Projects\2 - Year 2\trace_reactivation\materials_trace_reactivation.csv]")
 
 ```
+
+
+
+--------------------------------------------------------------------------------------------------------------------------------
+
+### 2nd round  -  A Dataset with only 32 experimental items instead of 64
+
+
+Load the dataset 
+
+```{r}
+
+materials <- read_csv("csv_test2.csv")
+
+```
+
+Remove the rows we don't need
+
+```{r}
+
+materials <- materials |> 
+  filter(!is.na(sentence))
+
+```
+
+
+
+Rename the items after having deleted half of the experimental items
+
+```{r}
+
+materials <- materials |> 
+  mutate(item = ceiling(row_number() /2))
+
+```
+
+
+Make the condition name uppercase
+
+```{r}
+
+materials <- materials |> 
+  mutate(condition = if_else(condition == "fill", condition, str_to_upper(condition)))
+
+```
+
+Correct the encoding issue
+
+```{r}
+
+materials <- materials |> 
+  mutate_all(~ str_replace_all(., "Ãˆ", "È"))
+
+```
+
+
+
+Save the dataset 
+
+```{r}
+
+write_csv(materials, r"[C:\Users\lconc\OneDrive - student.unisi.it\PhD - DISPOC\Projects\2 - Year 2\trace_reactivation\csv_test2.csv]")
+
+```
+
+
 
